@@ -1,0 +1,14 @@
+mode: "indexer"
+dbType: "postgres"
+dbHost: "localhost"
+dbPort: 5432
+dbUser: "user"
+dbPass: ""
+dbName: "postgres"
+rpcEndpoint: "https://testnet.hashio.io/api"
+network: "hedera-testnet"
+networksFile: "networks.json"
+indexWorkers: 3
+forceResyncOnEveryStart: true
+migrateOnStart: true
+blockBatchSize: 100

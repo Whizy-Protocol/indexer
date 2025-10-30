@@ -1,0 +1,12 @@
+{
+  "hedera-testnet": {
+    "WhizyPredictionMarket": {
+      "address": "0x8CaA0b103CF1B1af4ab48C00922047F9Bad0206D",
+      "startBlock": 26898134
+    },
+    "ProtocolSelector": {
+      "address": "0x0371aB2d90A436C8E5c5B6aF8835F46A6Ce884Ba",
+      "startBlock": 26898134
+    }
+  }
+}
