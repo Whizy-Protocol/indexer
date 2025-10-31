@@ -7,6 +7,10 @@
     "ProtocolSelector": {
       "address": "0x0371aB2d90A436C8E5c5B6aF8835F46A6Ce884Ba",
       "startBlock": 26898134
+    },
+    "RebalancerDelegation": {
+      "address": "0x6D5f91cA52bdD5d3DAAb52D91fBfd7e7D253d64A",
+      "startBlock": 26898134
     }
   }
 }

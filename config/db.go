@@ -202,6 +202,67 @@ type Unpaused struct {
 	TransactionHash string `gorm:"column:transaction_hash;not null;index"`
 }
 
+type AutoRebalanceEnabled struct {
+	ID              string `gorm:"primaryKey;column:id"`
+	User            string `gorm:"column:\"user\";not null;index"`
+	RiskProfile     int    `gorm:"column:risk_profile;not null"`
+	BlockNumber     BigInt `gorm:"column:block_number;type:NUMERIC;not null"`
+	BlockTimestamp  BigInt `gorm:"column:block_timestamp;type:NUMERIC;not null"`
+	TransactionHash string `gorm:"column:transaction_hash;not null;index"`
+}
+
+type AutoRebalanceDisabled struct {
+	ID              string `gorm:"primaryKey;column:id"`
+	User            string `gorm:"column:\"user\";not null;index"`
+	BlockNumber     BigInt `gorm:"column:block_number;type:NUMERIC;not null"`
+	BlockTimestamp  BigInt `gorm:"column:block_timestamp;type:NUMERIC;not null"`
+	TransactionHash string `gorm:"column:transaction_hash;not null;index"`
+}
+
+type Deposited struct {
+	ID              string `gorm:"primaryKey;column:id"`
+	User            string `gorm:"column:\"user\";not null;index"`
+	Amount          BigInt `gorm:"column:amount;type:NUMERIC;not null"`
+	BlockNumber     BigInt `gorm:"column:block_number;type:NUMERIC;not null"`
+	BlockTimestamp  BigInt `gorm:"column:block_timestamp;type:NUMERIC;not null"`
+	TransactionHash string `gorm:"column:transaction_hash;not null;index"`
+}
+
+type Withdrawn struct {
+	ID              string `gorm:"primaryKey;column:id"`
+	User            string `gorm:"column:\"user\";not null;index"`
+	Amount          BigInt `gorm:"column:amount;type:NUMERIC;not null"`
+	BlockNumber     BigInt `gorm:"column:block_number;type:NUMERIC;not null"`
+	BlockTimestamp  BigInt `gorm:"column:block_timestamp;type:NUMERIC;not null"`
+	TransactionHash string `gorm:"column:transaction_hash;not null;index"`
+}
+
+type Rebalanced struct {
+	ID              string `gorm:"primaryKey;column:id"`
+	User            string `gorm:"column:\"user\";not null;index"`
+	Operator        string `gorm:"column:operator;not null;index"`
+	Amount          BigInt `gorm:"column:amount;type:NUMERIC;not null"`
+	BlockNumber     BigInt `gorm:"column:block_number;type:NUMERIC;not null"`
+	BlockTimestamp  BigInt `gorm:"column:block_timestamp;type:NUMERIC;not null"`
+	TransactionHash string `gorm:"column:transaction_hash;not null;index"`
+}
+
+type OperatorAdded struct {
+	ID              string `gorm:"primaryKey;column:id"`
+	Operator        string `gorm:"column:operator;not null;index"`
+	BlockNumber     BigInt `gorm:"column:block_number;type:NUMERIC;not null"`
+	BlockTimestamp  BigInt `gorm:"column:block_timestamp;type:NUMERIC;not null"`
+	TransactionHash string `gorm:"column:transaction_hash;not null;index"`
+}
+
+type OperatorRemoved struct {
+	ID              string `gorm:"primaryKey;column:id"`
+	Operator        string `gorm:"column:operator;not null;index"`
+	BlockNumber     BigInt `gorm:"column:block_number;type:NUMERIC;not null"`
+	BlockTimestamp  BigInt `gorm:"column:block_timestamp;type:NUMERIC;not null"`
+	TransactionHash string `gorm:"column:transaction_hash;not null;index"`
+}
+
 type BigInt struct {
 	*big.Int
 }

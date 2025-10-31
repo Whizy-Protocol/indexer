@@ -24,6 +24,14 @@ var (
 	ProtocolRegisteredSignature   common.Hash
 	ProtocolUpdatedSignature      common.Hash
 	UnpausedSignature             common.Hash
+
+	AutoRebalanceEnabledSignature  common.Hash
+	AutoRebalanceDisabledSignature common.Hash
+	DepositedSignature             common.Hash
+	WithdrawnSignature             common.Hash
+	RebalancedSignature            common.Hash
+	OperatorAddedSignature         common.Hash
+	OperatorRemovedSignature       common.Hash
 )
 
 func init() {
@@ -40,6 +48,14 @@ func init() {
 	ProtocolRegisteredSignature = crypto.Keccak256Hash([]byte("ProtocolRegistered(uint8,address,string,uint8)"))
 	ProtocolUpdatedSignature = crypto.Keccak256Hash([]byte("ProtocolUpdated(address,uint256,uint256)"))
 	UnpausedSignature = crypto.Keccak256Hash([]byte("Unpaused(address)"))
+
+	AutoRebalanceEnabledSignature = crypto.Keccak256Hash([]byte("AutoRebalanceEnabled(address,uint8)"))
+	AutoRebalanceDisabledSignature = crypto.Keccak256Hash([]byte("AutoRebalanceDisabled(address)"))
+	DepositedSignature = crypto.Keccak256Hash([]byte("Deposited(address,uint256)"))
+	WithdrawnSignature = crypto.Keccak256Hash([]byte("Withdrawn(address,uint256)"))
+	RebalancedSignature = crypto.Keccak256Hash([]byte("Rebalanced(address,address,uint256)"))
+	OperatorAddedSignature = crypto.Keccak256Hash([]byte("OperatorAdded(address)"))
+	OperatorRemovedSignature = crypto.Keccak256Hash([]byte("OperatorRemoved(address)"))
 }
 
 func ParseLog(log types.Log, contractAddress string, blockTimestamp uint64) (interface{}, error) {
@@ -83,6 +99,25 @@ func ParseLog(log types.Log, contractAddress string, blockTimestamp uint64) (int
 			return parseProtocolUpdated(log, id, blockNumber, blockTS, txHash)
 		case eventSig == UnpausedSignature:
 			return parseUnpaused(log, id, blockNumber, blockTS, txHash)
+		}
+	}
+
+	if strings.EqualFold(contractAddress, config.RebalancerDelegationContract.Address) {
+		switch {
+		case eventSig == AutoRebalanceEnabledSignature:
+			return parseAutoRebalanceEnabled(log, id, blockNumber, blockTS, txHash)
+		case eventSig == AutoRebalanceDisabledSignature:
+			return parseAutoRebalanceDisabled(log, id, blockNumber, blockTS, txHash)
+		case eventSig == DepositedSignature:
+			return parseDeposited(log, id, blockNumber, blockTS, txHash)
+		case eventSig == WithdrawnSignature:
+			return parseWithdrawn(log, id, blockNumber, blockTS, txHash)
+		case eventSig == RebalancedSignature:
+			return parseRebalanced(log, id, blockNumber, blockTS, txHash)
+		case eventSig == OperatorAddedSignature:
+			return parseOperatorAdded(log, id, blockNumber, blockTS, txHash)
+		case eventSig == OperatorRemovedSignature:
+			return parseOperatorRemoved(log, id, blockNumber, blockTS, txHash)
 		}
 	}
 
@@ -322,4 +357,127 @@ func parseUnpaused(log types.Log, id string, blockNumber, blockTimestamp config.
 	}
 
 	return entity, nil
+}
+
+func parseAutoRebalanceEnabled(log types.Log, id string, blockNumber, blockTimestamp config.BigInt, txHash string) (*config.AutoRebalanceEnabled, error) {
+	if len(log.Topics) < 2 {
+		return nil, fmt.Errorf("insufficient topics for AutoRebalanceEnabled")
+	}
+
+	entity := &config.AutoRebalanceEnabled{
+		ID:              id,
+		User:            common.BytesToAddress(log.Topics[1].Bytes()).Hex(),
+		BlockNumber:     blockNumber,
+		BlockTimestamp:  blockTimestamp,
+		TransactionHash: txHash,
+	}
+
+	if len(log.Data) >= 32 {
+		entity.RiskProfile = int(new(big.Int).SetBytes(log.Data[0:32]).Int64())
+	}
+
+	return entity, nil
+}
+
+func parseAutoRebalanceDisabled(log types.Log, id string, blockNumber, blockTimestamp config.BigInt, txHash string) (*config.AutoRebalanceDisabled, error) {
+	if len(log.Topics) < 2 {
+		return nil, fmt.Errorf("insufficient topics for AutoRebalanceDisabled")
+	}
+
+	return &config.AutoRebalanceDisabled{
+		ID:              id,
+		User:            common.BytesToAddress(log.Topics[1].Bytes()).Hex(),
+		BlockNumber:     blockNumber,
+		BlockTimestamp:  blockTimestamp,
+		TransactionHash: txHash,
+	}, nil
+}
+
+func parseDeposited(log types.Log, id string, blockNumber, blockTimestamp config.BigInt, txHash string) (*config.Deposited, error) {
+	if len(log.Topics) < 2 {
+		return nil, fmt.Errorf("insufficient topics for Deposited")
+	}
+
+	entity := &config.Deposited{
+		ID:              id,
+		User:            common.BytesToAddress(log.Topics[1].Bytes()).Hex(),
+		BlockNumber:     blockNumber,
+		BlockTimestamp:  blockTimestamp,
+		TransactionHash: txHash,
+	}
+
+	if len(log.Data) >= 32 {
+		entity.Amount = config.BigInt{Int: new(big.Int).SetBytes(log.Data[0:32])}
+	}
+
+	return entity, nil
+}
+
+func parseWithdrawn(log types.Log, id string, blockNumber, blockTimestamp config.BigInt, txHash string) (*config.Withdrawn, error) {
+	if len(log.Topics) < 2 {
+		return nil, fmt.Errorf("insufficient topics for Withdrawn")
+	}
+
+	entity := &config.Withdrawn{
+		ID:              id,
+		User:            common.BytesToAddress(log.Topics[1].Bytes()).Hex(),
+		BlockNumber:     blockNumber,
+		BlockTimestamp:  blockTimestamp,
+		TransactionHash: txHash,
+	}
+
+	if len(log.Data) >= 32 {
+		entity.Amount = config.BigInt{Int: new(big.Int).SetBytes(log.Data[0:32])}
+	}
+
+	return entity, nil
+}
+
+func parseRebalanced(log types.Log, id string, blockNumber, blockTimestamp config.BigInt, txHash string) (*config.Rebalanced, error) {
+	if len(log.Topics) < 3 {
+		return nil, fmt.Errorf("insufficient topics for Rebalanced")
+	}
+
+	entity := &config.Rebalanced{
+		ID:              id,
+		User:            common.BytesToAddress(log.Topics[1].Bytes()).Hex(),
+		Operator:        common.BytesToAddress(log.Topics[2].Bytes()).Hex(),
+		BlockNumber:     blockNumber,
+		BlockTimestamp:  blockTimestamp,
+		TransactionHash: txHash,
+	}
+
+	if len(log.Data) >= 32 {
+		entity.Amount = config.BigInt{Int: new(big.Int).SetBytes(log.Data[0:32])}
+	}
+
+	return entity, nil
+}
+
+func parseOperatorAdded(log types.Log, id string, blockNumber, blockTimestamp config.BigInt, txHash string) (*config.OperatorAdded, error) {
+	if len(log.Topics) < 2 {
+		return nil, fmt.Errorf("insufficient topics for OperatorAdded")
+	}
+
+	return &config.OperatorAdded{
+		ID:              id,
+		Operator:        common.BytesToAddress(log.Topics[1].Bytes()).Hex(),
+		BlockNumber:     blockNumber,
+		BlockTimestamp:  blockTimestamp,
+		TransactionHash: txHash,
+	}, nil
+}
+
+func parseOperatorRemoved(log types.Log, id string, blockNumber, blockTimestamp config.BigInt, txHash string) (*config.OperatorRemoved, error) {
+	if len(log.Topics) < 2 {
+		return nil, fmt.Errorf("insufficient topics for OperatorRemoved")
+	}
+
+	return &config.OperatorRemoved{
+		ID:              id,
+		Operator:        common.BytesToAddress(log.Topics[1].Bytes()).Hex(),
+		BlockNumber:     blockNumber,
+		BlockTimestamp:  blockTimestamp,
+		TransactionHash: txHash,
+	}, nil
 }

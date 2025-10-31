@@ -25,8 +25,9 @@ type Contract struct {
 
 var (
 	WhizyPredictionMarketContract Contract
-	ProtocolSelectorContract     Contract
-	Contracts                    []Contract
+	ProtocolSelectorContract      Contract
+	RebalancerDelegationContract  Contract
+	Contracts                     []Contract
 )
 
 type NetworkConfig map[string]map[string]struct {
@@ -105,6 +106,8 @@ func LoadNetworks(networksFile, network string) error {
 			WhizyPredictionMarketContract = contract
 		case "ProtocolSelector":
 			ProtocolSelectorContract = contract
+		case "RebalancerDelegation":
+			RebalancerDelegationContract = contract
 		}
 
 		Contracts = append(Contracts, contract)
