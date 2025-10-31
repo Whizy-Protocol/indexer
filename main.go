@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 	"time"
 
@@ -52,7 +53,11 @@ func main() {
 	if cfg.MigrateOnStart {
 		for _, table := range tables {
 			if err := db.AutoMigrate(table); err != nil {
-				panic(fmt.Sprintf("Migration error: %v", err))
+if strings.Contains(err.Error(), "already exists (SQLSTATE 42701)") {
+					log.Printf("Warning: Migration skipped for existing column: %v", err)
+				} else {
+					panic(fmt.Sprintf("Migration error: %v", err))
+				}
 			}
 		}
 	}
