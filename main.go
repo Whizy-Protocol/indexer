@@ -31,6 +31,7 @@ func main() {
 		&config.MarketCreated{},
 		&config.MarketResolved{},
 		&config.WinningsClaimed{},
+		&config.MarketVaultRebalanced{},
 		&config.AutoDepositExecuted{},
 		&config.AutoWithdrawExecuted{},
 		&config.OwnershipTransferred{},
@@ -38,6 +39,13 @@ func main() {
 		&config.ProtocolRegistered{},
 		&config.ProtocolUpdated{},
 		&config.Unpaused{},
+		&config.AutoRebalanceEnabled{},
+		&config.AutoRebalanceDisabled{},
+		&config.Deposited{},
+		&config.Withdrawn{},
+		&config.Rebalanced{},
+		&config.OperatorAdded{},
+		&config.OperatorRemoved{},
 		&config.SyncState{},
 	}
 

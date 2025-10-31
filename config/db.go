@@ -263,6 +263,15 @@ type OperatorRemoved struct {
 	TransactionHash string `gorm:"column:transaction_hash;not null;index"`
 }
 
+type MarketVaultRebalanced struct {
+	ID              string `gorm:"primaryKey;column:id"`
+	MarketID        BigInt `gorm:"column:market_id;type:NUMERIC;not null;index"`
+	Amount          BigInt `gorm:"column:amount;type:NUMERIC;not null"`
+	BlockNumber     BigInt `gorm:"column:block_number;type:NUMERIC;not null"`
+	BlockTimestamp  BigInt `gorm:"column:block_timestamp;type:NUMERIC;not null"`
+	TransactionHash string `gorm:"column:transaction_hash;not null;index"`
+}
+
 type BigInt struct {
 	*big.Int
 }

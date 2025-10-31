@@ -1,16 +1,16 @@
 {
   "hedera-testnet": {
     "WhizyPredictionMarket": {
-      "address": "0x8CaA0b103CF1B1af4ab48C00922047F9Bad0206D",
-      "startBlock": 26898134
+      "address": "0x0f881762d0fd0E226fe00f2CE5801980EB046902",
+      "startBlock": 26927010
     },
     "ProtocolSelector": {
-      "address": "0x0371aB2d90A436C8E5c5B6aF8835F46A6Ce884Ba",
-      "startBlock": 26898134
+      "address": "0x097c8868c58194125025804Df54ecFc3a9a73985",
+      "startBlock": 26927010
     },
     "RebalancerDelegation": {
-      "address": "0x6D5f91cA52bdD5d3DAAb52D91fBfd7e7D253d64A",
-      "startBlock": 26898134
+      "address": "0xA5d395776429C06C01B5983B32e36Bf578c655a9",
+      "startBlock": 26927010
     }
   }
 }

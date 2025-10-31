@@ -12,10 +12,11 @@ import (
 )
 
 var (
-	BetPlacedSignature       common.Hash
-	MarketCreatedSignature   common.Hash
-	MarketResolvedSignature  common.Hash
-	WinningsClaimedSignature common.Hash
+	BetPlacedSignature          common.Hash
+	MarketCreatedSignature      common.Hash
+	MarketResolvedSignature     common.Hash
+	WinningsClaimedSignature    common.Hash
+	MarketVaultRebalancedSignature common.Hash
 
 	AutoDepositExecutedSignature  common.Hash
 	AutoWithdrawExecutedSignature common.Hash
@@ -40,6 +41,7 @@ func init() {
 	MarketCreatedSignature = crypto.Keccak256Hash([]byte("MarketCreated(uint256,string,uint256,address,address)"))
 	MarketResolvedSignature = crypto.Keccak256Hash([]byte("MarketResolved(uint256,bool)"))
 	WinningsClaimedSignature = crypto.Keccak256Hash([]byte("WinningsClaimed(uint256,address,uint256)"))
+	MarketVaultRebalancedSignature = crypto.Keccak256Hash([]byte("MarketVaultRebalanced(uint256,uint256)"))
 
 	AutoDepositExecutedSignature = crypto.Keccak256Hash([]byte("AutoDepositExecuted(address,address,uint256,bool)"))
 	AutoWithdrawExecutedSignature = crypto.Keccak256Hash([]byte("AutoWithdrawExecuted(address,address,uint256,bool)"))
@@ -80,6 +82,8 @@ func ParseLog(log types.Log, contractAddress string, blockTimestamp uint64) (int
 			return parseMarketResolved(log, id, blockNumber, blockTS, txHash)
 		case eventSig == WinningsClaimedSignature:
 			return parseWinningsClaimed(log, id, blockNumber, blockTS, txHash)
+		case eventSig == MarketVaultRebalancedSignature:
+			return parseMarketVaultRebalanced(log, id, blockNumber, blockTS, txHash)
 		}
 	}
 
@@ -480,4 +484,24 @@ func parseOperatorRemoved(log types.Log, id string, blockNumber, blockTimestamp 
 		BlockTimestamp:  blockTimestamp,
 		TransactionHash: txHash,
 	}, nil
+}
+
+func parseMarketVaultRebalanced(log types.Log, id string, blockNumber, blockTimestamp config.BigInt, txHash string) (*config.MarketVaultRebalanced, error) {
+	if len(log.Topics) < 2 {
+		return nil, fmt.Errorf("insufficient topics for MarketVaultRebalanced")
+	}
+
+	entity := &config.MarketVaultRebalanced{
+		ID:              id,
+		MarketID:        config.BigInt{Int: new(big.Int).SetBytes(log.Topics[1].Bytes())},
+		BlockNumber:     blockNumber,
+		BlockTimestamp:  blockTimestamp,
+		TransactionHash: txHash,
+	}
+
+	if len(log.Data) >= 32 {
+		entity.Amount = config.BigInt{Int: new(big.Int).SetBytes(log.Data[0:32])}
+	}
+
+	return entity, nil
 }
